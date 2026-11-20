@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>モンスト反射線ガイド v66</title>
+<style>*{box-sizing:border-box}
+:root{color-scheme:dark}
+body{margin:0;background:#090b10;color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}
+header{position:sticky;top:0;z-index:5;background:rgba(13,16,23,.96);backdrop-filter:blur(14px);padding:8px 10px;border-bottom:1px solid #252b36;box-shadow:0 3px 14px rgba(0,0,0,.22)}
+.title{display:flex;justify-content:space-between;align-items:center;gap:8px}.title h1{font-size:15px;margin:0;letter-spacing:.01em}.ver{font-size:10px;padding:3px 6px;border-radius:999px;background:#202735;color:#9edcff;border:1px solid #354154}
+#wrap{position:relative;display:flex;justify-content:center;padding:0;background:#05070a;overflow:hidden}
+canvas{display:block;max-width:100%;height:auto;background:#222;touch-action:none;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#dock{position:absolute;left:50%;top:calc(69% + 6px);bottom:0;transform:translateX(-50%);width:min(100%,710px);padding:7px 8px 9px;background:rgba(9,12,18,.94);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 -8px 22px rgba(0,0,0,.32);z-index:4}
+.toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,auto);gap:5px}.toolbar button,.toolbar label{min-height:34px}
+button,label.btn{display:flex;align-items:center;justify-content:center;background:#1b2029;color:#fff;border:1px solid #3a4351;border-radius:8px;padding:6px 5px;font-size:11px;font-weight:600;cursor:pointer}button:active,label.btn:active{transform:scale(.98)}.toolbar .primary{background:#155f98;border-color:#3aa8ef}
+input[type=file]{display:none}
+.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:5px}.control{background:rgba(20,25,34,.94);border:1px solid #252d39;border-radius:8px;padding:5px 7px;font-size:10px;color:#cbd2dc}.control .top{display:flex;justify-content:space-between;gap:5px;margin-bottom:3px}.control b{color:#fff;font-size:11px}.control input{width:100%;margin:0;accent-color:#4db9ff}
+.status{font-size:9px;color:#9aa5b4;margin-top:7px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+@media(max-width:520px){.toolbar{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,auto)}.toolbar button,.toolbar label{font-size:10px;padding:5px 2px}.controls{grid-template-columns:1fr 1fr 1fr}.control{padding:4px 5px}.status{font-size:8px}}
+
+/* v16 controls: full-width vertical sliders with easy +/- buttons */
+#dock{
+  background:#0b0f16;
+}
+.controls{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:6px !important;
+  margin-top:6px !important;
+}
+.control.control-full{
+  width:100%;
+  padding:7px 9px;
+}
+.slider-line{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.slider-line input[type="range"]{
+  flex:1 1 auto;
+  width:auto !important;
+  min-width:0;
+  height:28px;
+}
+.stepper{
+  display:flex;
+  flex:0 0 auto;
+  gap:5px;
+}
+.stepper button{
+  width:42px;
+  height:36px;
+  padding:0;
+  border-radius:9px;
+  font-size:21px;
+  font-weight:700;
+  line-height:1;
+  background:#222a35;
+  border:1px solid #465264;
+}
+.stepper button:active{transform:scale(.94);background:#303a49}
+@media(max-width:520px){
+  #dock{padding:7px 8px calc(10px + env(safe-area-inset-bottom));}
+  .toolbar{grid-template-columns:repeat(4,1fr)}
+  .controls{gap:5px !important}
+  .control.control-full{padding:6px 8px}
+  .stepper button{width:40px;height:36px}
+}
+
+
+/* v16: compact controls */
+#dock{background:#0b0f16}
+.controls{display:flex!important;flex-direction:column!important;gap:5px!important;margin-top:5px!important}
+.control.control-full{width:100%;padding:6px 8px}
+.slider-line{display:flex;align-items:center;gap:8px}
+.slider-line input[type="range"]{flex:1 1 auto;width:auto!important;min-width:0;height:28px}
+.stepper{display:flex;flex:0 0 auto;gap:5px}
+.stepper button{width:40px;height:34px;padding:0;border-radius:8px;font-size:20px;font-weight:700;line-height:1;background:#222a35;border:1px solid #465264}
+.stepper button:active{transform:scale(.94);background:#303a49}
+@media(max-width:520px){
+  #dock{padding:5px 8px calc(7px + env(safe-area-inset-bottom))}
+  .controls{gap:4px!important}
+  .control.control-full{padding:5px 7px}
+  .stepper button{width:40px;height:34px}
+}
+
+
+#dock{overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin}#rank-v45-diagnostics{margin:8px 0!important}#rank-v44-diagnostics pre{margin:8px 0 0;line-height:1.7}#dock{padding-bottom:calc(30px + env(safe-area-inset-bottom))!important}#wrap{display:block!important}#cv{margin:0 auto}#rank-v44-diagnostics{margin:8px 0!important}body{padding-bottom:calc(32px + env(safe-area-inset-bottom))}/* v42: normal document scrolling, no nested scrolling or overlay clipping */
+#wrap{display:flex!important;flex-direction:column!important;align-items:center;overflow:visible!important}
+#cv{display:block;margin:0 auto;flex:none}
+#dock{position:static!important;left:auto!important;top:auto!important;bottom:auto!important;transform:none!important;width:min(100%,710px)!important;height:auto!important;max-height:none!important;overflow:visible!important;overscroll-behavior:auto!important;touch-action:auto!important;flex:none;box-shadow:none}
+#rank-v44-diagnostics{margin:8px 0!important}
+#rank-v44-diagnostics pre{white-space:pre-wrap;overflow-wrap:anywhere}
+html,body{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* v43: restore original 69% image overlay, but allow dock to grow below canvas. */
+#wrap{display:block!important;position:relative!important;overflow:visible!important;min-height:0}
+#cv{display:block!important;margin:0 auto!important}
+#dock{position:absolute!important;left:50%!important;top:var(--dock-top,69%)!important;bottom:auto!important;transform:translateX(-50%)!important;width:min(100%,710px)!important;height:auto!important;max-height:none!important;overflow:visible!important;overscroll-behavior:auto!important;touch-action:pan-y!important;box-shadow:0 -8px 22px rgba(0,0,0,.32)!important}
+html,body{overflow-x:hidden;overflow-y:auto}
+.rank-progress{position:absolute;z-index:3;top:9px;left:50%;transform:translateX(-50%);width:min(calc(100% - 18px),690px);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;pointer-events:auto}
+.rank-tile{position:relative;isolation:isolate;min-width:0;height:clamp(69px,20vw,112px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 2px;background:#202938;border:5px solid #353f52;border-radius:13px;overflow:hidden;color:#f5f7fb;cursor:pointer;touch-action:manipulation;box-shadow:0 3px 10px #0005;user-select:none;-webkit-tap-highlight-color:transparent}
+.rank-tile::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(13,19,29,.38);pointer-events:none}
+.rank-photo{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.rank-name,.rank-symbol,.rank-caption{position:relative;z-index:2;pointer-events:none;text-shadow:0 1px 4px #000,0 0 3px #000}
+.rank-name{font-size:clamp(13px,3.5vw,22px);font-weight:800}
+.rank-symbol{height:21px;width:21px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 1px 2px #000)}
+.rank-symbol svg{width:21px;height:21px}.rank-caption{font-size:clamp(9px,2.45vw,14px);font-weight:700;white-space:nowrap}
+.rank-tile.found .rank-symbol{color:#59dca8}.rank-tile.searching .rank-symbol{color:#b8d2ff}.rank-tile.failed .rank-symbol{color:#f0a3a3}
+.rank-tile.selected{border-color:#b0a46a;box-shadow:0 0 0 2px #d9c66c55,0 3px 10px #0005}
+.rank-tile:disabled{cursor:default;opacity:1}
+.rank-spin{width:21px;height:21px;border:3px solid #a8c5f952;border-top-color:#a9c9ff;border-radius:50%;animation:rankRotate .95s linear infinite}
+@keyframes rankRotate{to{transform:rotate(360deg)}}
+/* v59 angle nudge: wide, holdable buttons with a centered live readout */
+.angle-line{display:grid;grid-template-columns:minmax(0,1fr) 100px minmax(0,1fr);gap:8px;align-items:center}
+.angle-line button{min-width:0;height:34px;border-radius:9px;font-size:23px;font-weight:800;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.angle-line b{text-align:center;font-variant-numeric:tabular-nums;font-size:16px;white-space:nowrap}
+
+/* v60: match angle row height to the existing slider stepper row. */
+.angle-line{min-height:34px}
+.angle-line button{height:34px}
+
+/* v63: iOS standalone already places the document below its status bar.
+   Add only a small breathing gap instead of duplicating the safe-area offset. */
+@media (display-mode: standalone) {
+  html { background:#090b10; }
+  body { padding-top: 45px !important; }
+  header { top: 0 !important; }
+}
+html.ios-standalone { background:#090b10; }
+html.ios-standalone body { padding-top: 45px !important; }
+html.ios-standalone header { top: 0 !important; }
+</style>
+</head>
+<body>
+<script>if(window.navigator.standalone===true)document.documentElement.classList.add("ios-standalone");</script>
+<header>
+  <div class="title"><h1>モンスト反射線ガイド</h1><span class="ver">v66 上部余白45px</span></div>
+</header>
+
+<div id="wrap">
+  <canvas id="cv"></canvas>
+  <div id="rankProgress" class="rank-progress" aria-live="polite"></div>
+  <div id="dock">
+    <div class="toolbar">
+      <label class="btn">📷 読込<input id="file" type="file" accept="image/*"></label>
+      <button id="lock" class="primary">① 円を合わせる</button>
+      <button id="showWall">壁枠 ON</button>
+      <button id="save">💾 保存</button>
+      <button id="widthMode">軌道幅 OFF</button>
+      <button id="autoMarkerToggle">自動認識丸 OFF</button>
+      <button id="autoMarkerSelect">自動丸を選択</button>
+    </div>
+    <div class="controls">
+      <div class="control control-full">
+        <div class="top"><span>角度調整</span></div>
+        <div class="angle-line"><button type="button" id="angleLeft" aria-label="角度を左へ0.35度ずつ調整">◀︎</button><b id="angleValue">0.00°</b><button type="button" id="angleRight" aria-label="角度を右へ0.35度ずつ調整">▶︎</button></div>
+      </div>
+      <div class="control control-full">
+        <div class="top"><span>進行方向 反射回数</span><b><span id="bv">4</span>回</b></div>
+        <div class="slider-line"><input id="bounces" type="range" min="0" max="20" step="1" value="4"><div class="stepper"><button type="button" id="bounceMinus">−</button><button type="button" id="bouncePlus">＋</button></div></div>
+      </div>
+      <div class="control control-full">
+        <div class="top"><span>逆方向 反射回数</span><b><span id="rv">0</span>回</b></div>
+        <div class="slider-line"><input id="reverseBounces" type="range" min="0" max="20" step="1" value="0"><div class="stepper"><button type="button" id="reverseMinus">−</button><button type="button" id="reversePlus">＋</button></div></div>
+      </div>
+      <div class="control control-full">
+        <div class="top"><span>円径</span><b><span id="dv">110</span>px</b></div>
+        <div class="slider-line"><input id="diam" type="range" min="40" max="160" step="2" value="110"><div class="stepper"><button type="button" id="diamMinus">−</button><button type="button" id="diamPlus">＋</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const BASE_W=710, BASE_H=1536;
+// 今回の2枚の実測：壁に接触した「六角形中心」を中心座標として固定。
+// 左下：左壁≈34, 下壁≈1034 / 右上：右壁≈676, 上壁≈296
+const WALL={L:34,R:676,T:296,B:1030};
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const file=document.getElementById('file');
+const lockBtn=document.getElementById('lock');
+const place=document.getElementById('lock');
+const showWall=document.getElementById('showWall');
+const save=document.getElementById('save');
+const widthModeBtn=document.getElementById('widthMode');
+const bounces=document.getElementById('bounces');
+const reverseBounces=document.getElementById('reverseBounces');
+const diam=document.getElementById('diam');
+const angleValue=document.getElementById('angleValue');
+const bv=document.getElementById('bv'),rv=document.getElementById('rv'),dv=document.getElementById('dv'),lv=document.getElementById('lv');
+
+let img=null, W=BASE_W,H=BASE_H;
+let sx=1,sy=1;
+let ball={x:355,y:700,r:55};
+let aim={x:500,y:700};
+let pullPoint={x:155,y:700};
+// 引っ張り操作用の「擬似キャラ中心」。最初に画面をタップした点を固定し、
+// その点を中心に指を動かした角度を、実キャラの発射角として使う。
+let aimAnchor={x:155,y:700};
+let dragging=null;
+let showWalls=true;
+let locked=false;
+let manualAdjustMode=false;
+let touchPreview=null;
+let characters=[]; let selectedCharacter=-1;
+let showAutoMarkers=true;
+let showCorridor=false;
+const TOUCH_OFFSET_CSS=126;
+function getTouchOffsetY(){
+  const r=cv.getBoundingClientRect();
+  return TOUCH_OFFSET_CSS*BASE_H/r.height;
+}
+
+function fitCanvas(){
+  const maxW=Math.min(window.innerWidth-20,BASE_W);
+  const ratio=BASE_H/BASE_W;
+  cv.style.width=maxW+'px';
+  cv.style.height=(maxW*ratio)+'px';
+  sx=cv.width/BASE_W; sy=cv.height/BASE_H;
+}
+
+function resizeCanvas(){
+  cv.width=BASE_W; cv.height=BASE_H; fitCanvas(); draw();
+}
+window.addEventListener('resize',fitCanvas);
+
+function updateAngleValue(){
+  // 0° points right; positive angles turn clockwise in canvas coordinates.
+  // 12 o'clock = 0°, increasing clockwise (right=90°, down=180°).
+  const degrees=Math.atan2(aim.y-ball.y,aim.x-ball.x)*180/Math.PI+90;
+  const normalized=((degrees%360)+360)%360;
+  angleValue.textContent=normalized.toFixed(2)+'°';
+}
+function nudgeAngle(direction){
+  const step=0.35*Math.PI/180;
+  const dx=aim.x-ball.x,dy=aim.y-ball.y;
+  const distance=Math.hypot(dx,dy)||145;
+  const angle=Math.atan2(dy,dx)+direction*step;
+  aim.x=ball.x+Math.cos(angle)*distance;
+  aim.y=ball.y+Math.sin(angle)*distance;
+  draw();
+}
+function bindAngleButton(id,direction){
+  const button=document.getElementById(id);
+  let delay=null,repeat=null,active=false;
+  const stop=()=>{
+    active=false;
+    clearTimeout(delay);clearInterval(repeat);
+    delay=null;repeat=null;
+  };
+  button.addEventListener('pointerdown',e=>{
+    if(e.button!==undefined&&e.button!==0)return;
+    e.preventDefault();
+    stop();active=true;
+    try{button.setPointerCapture(e.pointerId);}catch(_){}
+    nudgeAngle(direction);
+    delay=setTimeout(()=>{
+      if(!active)return;
+      repeat=setInterval(()=>{if(active)nudgeAngle(direction);},65);
+    },330);
+  });
+  button.addEventListener('pointerup',stop);
+  button.addEventListener('pointercancel',stop);
+  button.addEventListener('lostpointercapture',stop);
+  button.addEventListener('contextmenu',e=>e.preventDefault());
+}
+bindAngleButton('angleLeft',-1);
+bindAngleButton('angleRight',1);
+function draw(){
+  updateAngleValue();
+  ctx.clearRect(0,0,W,H);
+  if(img){
+    ctx.drawImage(img,0,0,W,H);
+  }else{
+    ctx.fillStyle='#251f1b';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#777';ctx.font='24px sans-serif';ctx.textAlign='center';
+    ctx.fillText('スクリーンショットを読み込んでください',W/2,H/2);
+  }
+
+  if(showWalls){
+    ctx.save();
+    ctx.strokeStyle='rgba(0,220,255,.9)';
+    ctx.lineWidth=3;
+    ctx.setLineDash([12,8]);
+    ctx.strokeRect(WALL.L,WALL.T,WALL.R-WALL.L,WALL.B-WALL.T);
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,220,255,.95)';
+    ctx.font='bold 18px sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText('固定壁',WALL.L+8,WALL.T-10);
+    ctx.restore();
+  }
+
+  if(showAutoMarkers && characters.length){characters.forEach((c,i)=>{ctx.save();ctx.strokeStyle=i===selectedCharacter?'#fff36a':'#46dfff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(c.x,c.y,ball.r,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.fillText(c.label,c.x,c.y-ball.r-9);ctx.restore();});}
+  if(locked) drawGuide();
+  if(!locked && (!characters.length || selectedCharacter>=0 || manualAdjustMode)) drawPlacementUI();
+}
+
+function drawPlacementUI(){
+  ctx.save();
+  ctx.strokeStyle=manualAdjustMode?'#ffb84d':'#ff315d'; ctx.lineWidth=4;
+  ctx.fillStyle=manualAdjustMode?'rgba(255,184,77,.13)':'rgba(255,49,93,.10)';
+  ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle=manualAdjustMode?'#ffb84d':'#ff315d';
+  ctx.beginPath(); ctx.arc(ball.x,ball.y,4,0,Math.PI*2); ctx.fill();
+
+  if(touchPreview){
+    ctx.strokeStyle='rgba(255,255,255,.75)';
+    ctx.lineWidth=2; ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(touchPreview.x,touchPreview.y); ctx.lineTo(ball.x,ball.y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,255,255,.9)';
+    ctx.beginPath(); ctx.arc(touchPreview.x,touchPreview.y,6,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawGuide(){
+  // 固定後は画面のどこからでも指を置いて引っ張れる。
+  // 指の位置（pullPoint）を基準に、反対方向を進行方向にする。
+  const rawDx=aim.x-ball.x, rawDy=aim.y-ball.y;
+  const rawD=Math.hypot(rawDx,rawDy)||1;
+  const ux=rawDx/rawD, uy=rawDy/rawD;
+  // 軌道
+  const bounceCount=Number(bounces.value);
+  const autoLen=Math.max(3000,2500*(bounceCount+1));
+  const p=trace(ball.x,ball.y,aim.x,aim.y,bounceCount,autoLen);
+  ctx.save();
+  if(showCorridor && p.length>1){
+    // One shared trace. Render only the narrow bounding rectangle of each
+    // segment instead of clearing and compositing a full-screen canvas.
+    const layer=drawGuide.corridorCanvas||(drawGuide.corridorCanvas=document.createElement('canvas'));
+    const pad=ball.r+4;
+    const paintSegment=(path,first)=>{
+      const minX=Math.min(path[0].x,path[1].x)-pad;
+      const minY=Math.min(path[0].y,path[1].y)-pad;
+      const maxX=Math.max(path[0].x,path[1].x)+pad;
+      const maxY=Math.max(path[0].y,path[1].y)+pad;
+      const left=Math.max(0,Math.floor(minX)),top=Math.max(0,Math.floor(minY));
+      const right=Math.min(cv.width,Math.ceil(maxX)),bottom=Math.min(cv.height,Math.ceil(maxY));
+      const w=right-left,h=bottom-top;
+      if(w<=0||h<=0)return;
+      if(layer.width!==w||layer.height!==h){layer.width=w;layer.height=h;}
+      const lc=layer.getContext('2d');
+      lc.clearRect(0,0,w,h);
+      lc.save();
+      lc.translate(-left,-top);
+      lc.lineCap='round';lc.lineJoin='round';
+      const stroke=()=>{
+        lc.beginPath();lc.moveTo(path[0].x,path[0].y);lc.lineTo(path[1].x,path[1].y);lc.stroke();
+      };
+      // Solid navy shell then erase its center: no dark fill under the red.
+      lc.strokeStyle='rgba(20,34,57,.85)';
+      lc.lineWidth=ball.r*2+2;
+      stroke();
+      lc.globalCompositeOperation='destination-out';
+      lc.strokeStyle='#000';lc.lineWidth=ball.r*2;
+      stroke();
+      lc.globalCompositeOperation='source-over';
+      // Keep fill and edge together, so overlapping segments retain their
+      // individual boundaries rather than merging into one contour.
+      lc.strokeStyle='rgba(255,70,70,.12)';
+      lc.lineWidth=ball.r*2;
+      stroke();
+      if(first){
+        // Only the launch segment has a transparent circular origin.
+        lc.globalCompositeOperation='destination-out';
+        lc.beginPath();lc.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+        lc.fillStyle='#000';lc.fill();
+      }
+      lc.restore();
+      ctx.drawImage(layer,left,top);
+    };
+    for(let i=1;i<p.length;i++)paintSegment([p[i-1],p[i]],i===1);
+  }
+  ctx.strokeStyle='rgba(255,70,70,.95)';
+  ctx.lineWidth=5;
+  ctx.lineCap='round';
+  ctx.shadowColor='rgba(0,0,0,.7)';
+  ctx.shadowBlur=4;
+  ctx.beginPath();
+  ctx.moveTo(p[0].x,p[0].y);
+  for(let i=1;i<p.length;i++)ctx.lineTo(p[i].x,p[i].y);
+  ctx.stroke();
+  ctx.restore();
+
+  // 最初の壁を越えた先を約1cmだけ点線で延長（反射線とは別の補助表示）
+  const firstRed=firstWallHit(ball.x,ball.y,ux,uy);
+  if(firstRed){ drawBeyondWall(firstRed.x,firstRed.y,ux,uy,'#ff4646'); }
+
+  // 反射点
+  ctx.fillStyle='#fff';
+  for(let i=1;i<p.length-1;i++){
+    ctx.beginPath();ctx.arc(p[i].x,p[i].y,5,0,Math.PI*2);ctx.fill();
+  }
+
+  // キャラ円
+  ctx.save();
+  ctx.strokeStyle='#ff315d';ctx.lineWidth=4;
+  ctx.fillStyle='rgba(255,49,93,.10)';
+  ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#ff315d';
+  ctx.beginPath();ctx.arc(ball.x,ball.y,4,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+
+  // モンスト式の感覚：最初にタップした「擬似キャラ中心」を固定し、
+  // そこから指を引っ張った方向の逆を進行方向にする。
+  // 逆方向：常に黄色。反射回数0なら従来通り「最初の壁まで」。
+  // 1以上なら壁で反射しながら黄色い軌道を伸ばす。
+  const reverseCount=Number(reverseBounces.value);
+  const back=firstWallHit(ball.x,ball.y,-ux,-uy);
+  if(reverseCount===0){
+    if(back){
+      ctx.save();
+      ctx.strokeStyle='#ffe45c';ctx.lineWidth=4;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(ball.x,ball.y);ctx.lineTo(back.x,back.y);ctx.stroke();
+      ctx.restore();
+      drawBeyondWall(back.x,back.y,-ux,-uy,'#ffe45c');
+    }
+  }else{
+    // 黄色線の最初の区間は反射計算に依存させず、必ずキャラ中心から最初の壁まで描く。
+    // これにより反射回数や角度によって「反射前の線」まで消える問題を防ぐ。
+    ctx.save();
+    ctx.strokeStyle='#ffe45c';ctx.lineWidth=4;ctx.lineCap='round';
+    ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=4;
+    ctx.beginPath();ctx.moveTo(ball.x,ball.y);
+    if(back){ctx.lineTo(back.x,back.y);}else{ctx.lineTo(ball.x-ux*1000,ball.y-uy*1000);}
+    ctx.stroke();ctx.restore();
+
+    if(back){
+      drawBeyondWall(back.x,back.y,-ux,-uy,'#ffe45c');
+      // 最初の壁に到達した後の軌道だけを別計算。反射回数1なら次の壁までを描く。
+      const reverseAutoLen=Math.max(3000,2500*reverseCount);
+      const rp=trace(back.x,back.y,back.x-ux,back.y-uy,reverseCount-1,reverseAutoLen);
+      ctx.save();
+      ctx.strokeStyle='#ffe45c';ctx.lineWidth=4;ctx.lineCap='round';
+      ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=4;
+      ctx.beginPath();ctx.moveTo(rp[0].x,rp[0].y);
+      for(let i=1;i<rp.length;i++)ctx.lineTo(rp[i].x,rp[i].y);
+      ctx.stroke();ctx.restore();
+      ctx.fillStyle='#fff';
+      for(let i=1;i<rp.length-1;i++){
+        ctx.beginPath();ctx.arc(rp[i].x,rp[i].y,5,0,Math.PI*2);ctx.fill();
+      }
+    }
+  }
+  // 赤線を最後に再描画し、黄色線と重なった区間でも赤線を前面に保つ。
+  ctx.save();ctx.strokeStyle='rgba(255,70,70,.98)';ctx.lineWidth=5;ctx.lineCap='round';ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=4;
+  ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);for(let i=1;i<p.length;i++)ctx.lineTo(p[i].x,p[i].y);ctx.stroke();ctx.restore();
+}
+
+function drawBeyondWall(x,y,dx,dy,color){
+  // 最初の直線だけ壁の外へ点線延長。
+  // 左右壁は画面端まで、上下壁は約2cm（基準座標で100px）。
+  const hitLeft = Math.abs(x-WALL.L)<1e-4;
+  const hitRight = Math.abs(x-WALL.R)<1e-4;
+
+  let ex,ey;
+  if(hitLeft || hitRight){
+    const t = dx>1e-9 ? (W-x)/dx : (dx<-1e-9 ? (0-x)/dx : 0);
+    if(t<=0)return;
+    ex=x+dx*t;
+    ey=y+dy*t;
+  }else{
+    const twoCm=100;
+    ex=x+dx*twoCm;
+    ey=y+dy*twoCm;
+  }
+
+  ctx.save();
+  ctx.strokeStyle=color;
+  ctx.lineWidth=3;
+  ctx.lineCap='round';
+  ctx.setLineDash([7,8]);
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.lineTo(ex,ey);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+function firstWallHit(x,y,dx,dy){
+  const hits=[];
+  if(dx>1e-9) hits.push((WALL.R-x)/dx);
+  if(dx<-1e-9) hits.push((WALL.L-x)/dx);
+  if(dy>1e-9) hits.push((WALL.B-y)/dy);
+  if(dy<-1e-9) hits.push((WALL.T-y)/dy);
+  const t=Math.min(...hits.filter(v=>v>1e-7));
+  if(!isFinite(t)) return null;
+  return {x:x+dx*t,y:y+dy*t};
+}
+
+function trace(x,y,ax,ay,n,maxLen){
+  // 壁境界から始まるケースも安定して扱う反射計算。
+  let dx=ax-x, dy=ay-y, d=Math.hypot(dx,dy);
+  if(d<1e-9) return [{x,y}];
+  dx/=d; dy/=d;
+  let px=x, py=y, remain=Math.max(0,maxLen);
+  const pts=[{x:px,y:py}], EPS=1e-6;
+  const reflections=Math.max(0,Math.floor(n));
+  let hits=0, guard=0;
+  while(remain>EPS && guard++<100){
+    // 始点が壁上で外向きなら、線分を進める前に内向きへ反転。
+    if(px<=WALL.L+EPS && dx<0) dx=-dx;
+    if(px>=WALL.R-EPS && dx>0) dx=-dx;
+    if(py<=WALL.T+EPS && dy<0) dy=-dy;
+    if(py>=WALL.B-EPS && dy>0) dy=-dy;
+
+    let tx=Infinity, ty=Infinity;
+    if(dx>EPS) tx=(WALL.R-px)/dx; else if(dx<-EPS) tx=(WALL.L-px)/dx;
+    if(dy>EPS) ty=(WALL.B-py)/dy; else if(dy<-EPS) ty=(WALL.T-py)/dy;
+    if(tx<EPS) tx=Infinity; if(ty<EPS) ty=Infinity;
+    let t=Math.min(tx,ty), hitX=Math.abs(t-tx)<1e-4, hitY=Math.abs(t-ty)<1e-4;
+    if(!Number.isFinite(t)) break;
+    if(t>=remain){pts.push({x:px+dx*remain,y:py+dy*remain});break;}
+    px+=dx*t; py+=dy*t; remain-=t;
+    if(hitX)px=dx>0?WALL.R:WALL.L;if(hitY)py=dy>0?WALL.B:WALL.T;
+    pts.push({x:px,y:py});
+    if(hitX)dx=-dx;if(hitY)dy=-dy;
+    hits++;
+    if(hits>reflections) break;
+  }
+  return pts;
+}
+
+function posFromEvent(e){
+  const r=cv.getBoundingClientRect();
+  return {x:(e.clientX-r.left)*BASE_W/r.width,y:(e.clientY-r.top)*BASE_H/r.height};
+}
+function down(e){
+  e.preventDefault();
+  const p=posFromEvent(e);
+  const d=Math.hypot(p.x-ball.x,p.y-ball.y);
+  // 位置固定後は画面のどこからでも操作可能。
+  // 最初にタップした点を「擬似的なキャラクター中心」として固定し、
+  // そこを基準に指を360°動かして角度を決める。
+  if(characters.length && (!locked || selectingAutoMarker) && !manualAdjustMode){
+    let best=-1,bd=Infinity;characters.forEach((c,i)=>{const d=Math.hypot(p.x-c.x,p.y-c.y);if(d<bd){bd=d;best=i;}});
+    if(best>=0 && bd<=Math.max(70,ball.r+15)){selectingAutoMarker=false;autoMarkerSelect.textContent='自動丸を選択';selectedCharacter=best;ball.x=characters[best].x;ball.y=characters[best].y;locked=true;manualAdjustMode=false;aim.x=ball.x+200;aim.y=ball.y;pullPoint.x=ball.x-200;pullPoint.y=ball.y;lockBtn.textContent='位置固定中';lockBtn.classList.add('locked');syncSelectedRankTile();draw();return;}
+    if(selectingAutoMarker){setStatus('認識済みの丸をタップしてください');return;}
+    dragging='ball';
+  }
+  else if(locked){
+    dragging='aim';
+    aimAnchor.x=p.x;
+    aimAnchor.y=p.y;
+    pullPoint.x=p.x;
+    pullPoint.y=p.y;
+    // 初期タップ位置とキャラ中心を結ぶ方向を暫定角度にする。
+    let dx=aimAnchor.x-p.x,dy=aimAnchor.y-p.y;
+    if(Math.hypot(dx,dy)<1){
+      dx=ball.x-p.x; dy=ball.y-p.y;
+    }
+    aim.x=ball.x+dx;
+    aim.y=ball.y+dy;
+  }else if(d<=ball.r+25){
+    dragging='ball';
+  }else{
+    dragging='ball';
+  }
+  cv.setPointerCapture?.(e.pointerId);
+  move(e);
+}
+function move(e){
+  if(!dragging)return;
+  e.preventDefault();
+  const p=posFromEvent(e);
+  if(dragging==='ball'){
+    // キャラクター中心は壁の内側ならどこでも置ける。円の半径分まで内側へ制限しない。
+    ball.x=Math.max(WALL.L,Math.min(WALL.R,p.x));
+    ball.y=Math.max(WALL.T,Math.min(WALL.B,p.y-getTouchOffsetY()));
+    // 手動位置はballだけを更新。自動認識結果charactersは保持して動かさない。
+    // 発射方向も同じベクトルを維持
+    const dx=aim.x-ball.x,dy=aim.y-ball.y;
+    if(Math.hypot(dx,dy)<5){aim.x=ball.x+100;aim.y=ball.y}
+  }else{
+    // 最初のタップ位置（擬似キャラ中心）から見た現在の指位置を使う。
+    // 指を中心から外へ引っ張った方向の逆が進行方向。
+    const dx=aimAnchor.x-p.x;
+    const dy=aimAnchor.y-p.y;
+    if(Math.hypot(dx,dy)>1){
+      // モンスト本家に合わせて0.35度単位へスナップ
+      const angle=Math.atan2(dy,dx), step=0.35*Math.PI/180;
+      const snapped=Math.round(angle/step)*step;
+      const len=Math.hypot(dx,dy);
+      aim.x=ball.x+Math.cos(snapped)*len;
+      aim.y=ball.y+Math.sin(snapped)*len;
+    }
+    pullPoint.x=p.x;
+    pullPoint.y=p.y;
+  }
+  draw();
+}
+function up(){dragging=null;draw()}
+
+cv.addEventListener('pointerdown',down);
+cv.addEventListener('pointermove',move);
+cv.addEventListener('pointerup',up);
+cv.addEventListener('pointercancel',up);
+
+file.addEventListener('change',e=>{
+  const f=e.target.files?.[0];
+  if(!f)return;
+  const u=URL.createObjectURL(f);
+  const im=new Image();
+  im.onload=()=>{
+    img=im;
+    recognitionRun++;
+    buildRankIconUrls();
+    updateRankProgress();
+    selectingAutoMarker=false;autoMarkerSelect.textContent='自動丸を選択';
+    // スクショは常にゲーム画面の基準比率へ描画。壁座標は710x1536基準で固定。
+    locked=false;manualAdjustMode=false;characters=[];selectedCharacter=-1;
+    dragging=null;
+    touchPreview=null;
+    lockBtn.textContent='手動位置固定';
+    lockBtn.classList.remove('locked');
+    draw();
+    URL.revokeObjectURL(u);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>autoRecognize(recognitionRun)));
+
+  };
+  im.onerror=()=>{
+    URL.revokeObjectURL(u);
+    alert('スクリーンショットを読み込めませんでした。もう一度選択してください。');
+  };
+  im.src=u;
+});
+
+place.onclick=()=>{place.classList.add('active')};
+lockBtn.onclick=()=>{
+  locked=!locked;
+  if(locked){
+    manualAdjustMode=false;
+    aim.x=ball.x+200; aim.y=ball.y;
+    pullPoint.x=ball.x-200; pullPoint.y=ball.y;
+    lockBtn.textContent='位置固定中';
+    lockBtn.classList.add('locked');
+  }else{
+    manualAdjustMode=true;
+    lockBtn.textContent='手動位置調整中';
+    lockBtn.classList.remove('locked');
+  }
+  draw();
+};
+
+showWall.onclick=()=>{showWalls=!showWalls;showWall.textContent='壁枠 '+(showWalls?'ON':'OFF');draw()};
+const autoMarkerToggle=document.getElementById('autoMarkerToggle');
+autoMarkerToggle.onclick=()=>{showAutoMarkers=!showAutoMarkers;autoMarkerToggle.textContent='自動認識丸 '+(showAutoMarkers?'ON':'OFF');draw();};
+const autoMarkerSelect=document.getElementById('autoMarkerSelect');
+let selectingAutoMarker=false;
+autoMarkerSelect.onclick=()=>{
+ if(!characters.length){setStatus('自動認識マーカーがありません');return;}
+ selectingAutoMarker=true;manualAdjustMode=false;locked=false;selectedCharacter=-1;dragging=null;
+  syncSelectedRankTile();
+ showAutoMarkers=true;autoMarkerToggle.textContent='自動認識丸 ON';
+ autoMarkerSelect.textContent='丸をタップして選択';
+ setStatus('画像上の自動認識丸をタップしてください');draw();
+};
+widthModeBtn.onclick=()=>{
+ showCorridor=!showCorridor;
+ widthModeBtn.textContent='軌道幅 '+(showCorridor?'ON':'OFF');
+ widthModeBtn.classList.toggle('active',showCorridor);draw();
+};
+function clampSlider(el,value){
+  const min=Number(el.min),max=Number(el.max),step=Number(el.step)||1;
+  let v=Math.max(min,Math.min(max,value));
+  v=Math.round((v-min)/step)*step+min;
+  v=Math.max(min,Math.min(max,v));
+  el.value=v;
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function wireStep(idMinus,idPlus,el,step){
+  document.getElementById(idMinus).onclick=()=>clampSlider(el,Number(el.value)-step);
+  document.getElementById(idPlus).onclick=()=>clampSlider(el,Number(el.value)+step);
+}
+bounces.oninput=()=>{bv.textContent=bounces.value;draw()};
+reverseBounces.oninput=()=>{rv.textContent=reverseBounces.value;draw()};
+diam.oninput=()=>{ball.r=Number(diam.value)/2;dv.textContent=diam.value;draw()};
+
+wireStep('diamMinus','diamPlus',diam,2);
+wireStep('bounceMinus','bouncePlus',bounces,1);
+wireStep('reverseMinus','reversePlus',reverseBounces,1);
+
+save.onclick=()=>{
+  const a=document.createElement('a');
+  a.download='monst-reflection-guide-v39.png';
+  a.href=cv.toDataURL('image/png');
+  a.click();
+};
+
+
+// v39: 色抽出・固定テンプレート照合を廃止。PaddleOCRの文字検出＋文字認識を使用。
+const RANK_LABELS=['1st','2nd','3rd','4th'];
+function normalizeRankText(value){
+  let s=String(value||'').toLowerCase().replace(/[\s.,:;_'’`-]/g,'');
+  s=s.replace(/[|!]/g,'1').replace(/^l(?=st$)/,'1').replace(/^i(?=st$)/,'1');
+  return s;
+}
+function rankFromText(value){
+  const s=normalizeRankText(value);
+  const aliases={
+    '1st':'1st','ist':'1st','lst':'1st','1s':'1st',
+    '2nd':'2nd','2n':'2nd',
+    '3rd':'3rd','3r':'3rd',
+    '4th':'4th','4t':'4th'
+  };
+  return aliases[s]||null;
+}
+function polygonBounds(poly){
+  if(!Array.isArray(poly)||!poly.length)return null;
+  const pts=poly.map(p=>Array.isArray(p)?{x:Number(p[0]),y:Number(p[1])}:({x:Number(p.x),y:Number(p.y)})).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));
+  if(!pts.length)return null;
+  const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+  return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};
+}
+
+const RED_RANK_MASKS={"1st":"00300000000000f00000000007f0000000003ff000000030fff0000000307ff0000000700ff0000000f001f0000001f001f007f803fe01f01fff07ff01f03fff87ff01f03e7fcffe01f03e1f8ffe01f03e0783f001f03f8301f001f01fc001f001f00ff001f001f007fc01f001f003fe01f001f000ff01f001f0007f81f001e0003fc1f001e0201fc1f001e0380fc1f001e01e0fc0fb01e00fffc0fe01e007ff80fc00e001ff0078","2nd":"07c00000001c0ff00000003e1ff80000003e3ff80000003e7ffc0000003e78fc0000003ee07c0000003e807c0000003e007c78f8007e007c7dfc01fe007c7ffc07fe00f87ffc0ffe00f87ffc1f3e00f07c7c1e3e01f0783c3e1e01e0783c3c1e03c0783c7c1e07c0783c781e0780783c781e0f00783c781e0f00783c781e1e00783c781e3c1c783c781e3cfc783c7c3e7ffc783c7fff7ffc781c3ffffffc381c3fdefff830180f0c","3rd":"03c0000000000ff00000007e1ff80000007e3ffc0000007e7ffe0000007cf87e0000007cc07e0000007c007e0000007c007e1f1c00fc007c1f3c03fc00f81ffc0ffc01f01ffc3ffc03f01ffc7e7c0ff01f80fc3c0ff81f00f83c01fc1f01f03c007e1f01f03c003f1f01f03c003f1f01e03c001f1f03e03c003f0f03e03c003e0f03e03c00fe0f01f07c01fc0f01f0fc07f80f01ffff1ff00f00ffff7f800e00ffbef80006003e18","4th":"00700000000000fc0000fc0001f80000fc0001f80060fc0001f00060fc0003f000e0fc0003f001e0fc0007fc03e0fc0007fe03fcfc3c07fe07fcfcfe0ffe0ffcffff0fbe1ffcffff0f1e1ffcffff1f1e03e0fe3f1f1e03e0fc1f1e1e03e0f81f3c1e03e0f81f3c1e03c0781f381e03c0781f783fc3c0781f7fffc3c0781f7fffc3c0781fffffc3c0781fffffc3c0781f001e01fc781f001e01fc780f001c01f8780e000c00e0380e"};
+
+async function detectRedRanks(image,missing,ocrPositions=[],ocrBoxes=[]){
+ // Browser-native matcher: no OpenCV/CDN required.
+ if(!missing.length&&!ocrBoxes.length)return {items:[],diagnostics:[],error:null};
+ const sx=image.naturalWidth/BASE_W,sy=image.naturalHeight/BASE_H;
+ const top=Math.round(210*sy),h=Math.min(image.naturalHeight-top,Math.round(930*sy));
+ const work=document.createElement('canvas');work.width=image.naturalWidth;work.height=h;
+ const cx=work.getContext('2d',{willReadFrequently:true});
+ cx.drawImage(image,0,top,work.width,h,0,0,work.width,h);
+ const W=work.width,H=work.height,rgba=cx.getImageData(0,0,W,H).data;
+ const red=new Uint8Array(W*H),white=new Uint8Array(W*H);
+ for(let i=0;i<W*H;i++){
+  const r=rgba[4*i],g=rgba[4*i+1],b=rgba[4*i+2],max=Math.max(r,g,b),min=Math.min(r,g,b);
+  red[i]=(r>70&&max-min>55&&r>g*1.35&&r>b*1.22)?1:0;
+  white[i]=(r>145&&g>135&&b>130&&max-min<85)?1:0;
+ }
+ // Fast search: restrict candidate centers to colored pixels and a 4px grid.
+ const out=[],diagnostics=[];
+ for(const label of [...new Set([...missing,...ocrBoxes.map(b=>b.label)])]){
+  const localBox=ocrBoxes.find(b=>b.label===label);
+  const hex=RED_RANK_MASKS[label],bits=new Uint8Array(48*28);
+  for(let i=0;i<bits.length;i++)bits[i]=(parseInt(hex[Math.floor(i/4)],16)>>(3-i%4))&1;
+  let best={score:-1,x:0,y:0,w:0,h:0}, candidates=[];
+  for(const widthBase of [44,52,60,68,76]){
+   const tw=Math.max(12,Math.round(widthBase*sx)),th=Math.max(8,Math.round(tw*28/48));
+   const sample=[];
+   for(let ty=0;ty<28;ty+=2)for(let tx=0;tx<48;tx+=2){
+    sample.push([Math.floor((tx+.5)*tw/48),Math.floor((ty+.5)*th/28),bits[ty*48+tx]]);
+   }
+   const stride=Math.max(2,Math.round(4*sx));
+   const xMin=localBox?Math.max(-Math.round(tw*.35),Math.floor((localBox.x-25)*sx-tw/2)):-Math.round(tw*.35);
+   const xMax=localBox?Math.min(W-Math.round(tw*.65),Math.ceil((localBox.x+25)*sx-tw/2)):W-Math.round(tw*.65);
+   const yMin=localBox?Math.max(0,Math.floor((localBox.y-22)*sy-top-th/2)):0;
+   const yMax=localBox?Math.min(H-th,Math.ceil((localBox.y+22)*sy-top-th/2)):H-th;
+   for(let y=yMin;y<=yMax;y+=stride){
+    for(let x=xMin;x<=xMax;x+=stride){
+     // Reject nearly empty red regions with 5 quick probes.
+     let probes=0;
+     for(const [px,py] of [[.2,.2],[.5,.2],[.8,.2],[.3,.55],[.7,.55],[.5,.8]])
+      {const xx=x+Math.floor(px*tw);if(xx>=0&&xx<W)probes+=red[(y+Math.floor(py*th))*W+xx];}
+     if(probes===0)continue;
+     let inter=0,ones=0,templ=0,outline=0,edge=0,visible=0;
+     const blocks=Array.from({length:24},()=>({hit:0,red:0,mask:0,n:0}));
+     for(const [dx,dy,v] of sample){
+      const xx=x+dx;if(xx<0||xx>=W)continue;
+      const idx=(y+dy)*W+xx,p=red[idx];inter+=p*v;ones+=p;templ+=v;visible++;
+      const bx=Math.min(5,Math.floor(dx/tw*6)),by=Math.min(3,Math.floor(dy/th*4)),block=blocks[by*6+bx];block.hit+=p*v;block.red+=p;block.mask+=v;block.n++;
+      if(v){
+       const nearWhite=white[idx]||(xx>0&&white[idx-1])||(xx<W-1&&white[idx+1])||(y+dy>0&&white[idx-W])||(y+dy<H-1&&white[idx+W]);
+       outline+=nearWhite?1:0;edge++;
+      }
+     }
+     const dice=(ones+templ)?2*inter/(ones+templ):0;
+     const outlineRatio=edge?outline/edge:0;
+     const coverage=visible/sample.length;
+     const fullScore=dice*(.86+.14*Math.min(1,outlineRatio/.25))*Math.min(1,coverage/.72);
+     // Occlusion-aware comparison: score contiguous visible 2/3 regions,
+     // not arbitrary best pixels (which would match unrelated glyph fragments).
+     let partial=0,partialSide='';
+     for(const side of ['left','right','top','bottom']){
+      let hit=0,rr=0,mm=0,count=0;
+      for(let bi=0;bi<24;bi++){
+       const col=bi%6,row=Math.floor(bi/6);
+       const keep=side==='left'?col<4:side==='right'?col>=2:side==='top'?row<3:row>=1;
+       if(!keep)continue;
+       const b=blocks[bi];hit+=b.hit;rr+=b.red;mm+=b.mask;count+=b.n;
+      }
+      const precision=mm?hit/mm:0,noise=rr?hit/rr:0;
+      const partDice=(rr+mm)?2*hit/(rr+mm):0;
+      const v=partDice*Math.min(1,precision/.68)*Math.min(1,noise/.68)*Math.min(1,count/75);
+      if(v>partial){partial=v;partialSide=side;}
+     }
+     // Preserve full-template strength; only grant a limited occlusion bonus
+     // when the visible region is substantially more convincing.
+     const score=Math.max(fullScore,Math.min(.82,partial*.91))*(.86+.14*Math.min(1,outlineRatio/.25))*Math.min(1,coverage/.72);
+     if(score>best.score)best={score,fullScore,partial,partialSide,x,y,w:tw,h:th};
+     if(score>=0.52){candidates.push({score,fullScore,partial,partialSide,x,y,w:tw,h:th});if(candidates.length>160){candidates.sort((a,b)=>b.score-a.score);candidates.length=65;}}
+    }
+   }
+  }
+  candidates.sort((a,b)=>b.score-a.score);
+  const distinct=[];
+  for(const c of candidates){
+   if(distinct.some(p=>Math.abs(p.x-c.x)<Math.min(p.w,c.w)*.65&&Math.abs(p.y-c.y)<Math.min(p.h,c.h)*.65))continue;
+   distinct.push(c);if(distinct.length>=8)break;
+  }
+  const viable=localBox?distinct:distinct.filter(c=>!ocrPositions.some(p=>Math.abs((c.x+c.w/2)/sx-p.x)<46&&Math.abs((c.y+top+c.h/2)/sy-p.y)<32));
+  const chosen=viable[0]||{score:-1,x:0,y:0,w:0,h:0};
+  const runner=viable[1]||{score:0};
+  const margin=chosen.score-runner.score;
+  const accepted=localBox?(chosen.score>=0.59&&Math.hypot((chosen.x+chosen.w/2)/sx-localBox.x,(chosen.y+top+chosen.h/2)/sy-localBox.y)<=19):(label==='1st'?(chosen.score>=0.60&&margin>=0.025):(chosen.score>=0.69&&margin>=0.075));
+  diagnostics.push({label,fullScore:chosen.fullScore||0,partial:chosen.partial||0,partialSide:chosen.partialSide||'-',score:chosen.score,x:chosen.x,y:chosen.y+top,w:chosen.w,h:chosen.h,runner:runner.score,margin,accepted,candidates:viable.slice(0,4).map(c=>({score:c.score,x:c.x,y:c.y+top}))});
+  if(accepted)out.push({text:label,score:chosen.score,refined:!!localBox,poly:[[chosen.x,chosen.y+top],[chosen.x+chosen.w,chosen.y+top],[chosen.x+chosen.w,chosen.y+chosen.h+top],[chosen.x,chosen.y+chosen.h+top]]});
+ }
+ return {items:out,diagnostics,error:null};
+}
+
+function showRankDiagnostics(data){
+ let panel=document.getElementById('rank-v44-diagnostics');
+ if(!panel){panel=document.createElement('details');panel.id='rank-v44-diagnostics';
+ panel.style.cssText='margin:8px 12px;padding:10px;border:1px solid #456;border-radius:9px;font-size:12px';
+ const summary=document.createElement('summary');summary.textContent='v45 認識診断（OCR／画像照合を比較）';panel.appendChild(summary);
+ document.getElementById('dock').appendChild(panel);}
+ const old=panel.querySelector('pre');if(old)old.remove();
+ const pre=document.createElement('pre');pre.style.cssText='white-space:pre-wrap;word-break:break-word;font-size:12px';
+ pre.textContent='処理時間 OCR '+Math.round(data.ocrMs)+'ms / 画像照合 '+Math.round(data.matchMs)+'ms / 合計 '+Math.round(data.totalMs)+'ms\n'+(data.error?'画像照合エラー: '+data.error+'\n':'')+RANK_LABELS.map(label=>{
+  const hit=data.shape.find(x=>x.label===label);
+  return label+' OCR:'+(data.ocr.includes(label)?'成功':'未検出')+
+   ' 画像:'+(hit?hit.score.toFixed(3):'実行不可')+
+   (hit?' 座標:('+hit.x+','+hit.y+')':'')+
+   ' 全体:'+(hit?hit.fullScore.toFixed(3):'-')+' 部分:'+(hit?hit.partial.toFixed(3)+'('+hit.partialSide+')':'-')+' 次点:'+(hit?hit.runner.toFixed(3):'-')+' 差:'+(hit?hit.margin.toFixed(3):'-')+' 採用:'+(hit&&hit.accepted?'可':'保留')+(hit&&hit.reason?' ('+hit.reason+')':'')+(hit&&hit.candidates?' 候補:'+hit.candidates.map(c=>c.score.toFixed(2)+'@'+c.x+','+c.y).join(' / '):'');
+ }).join('\n')+'\n※全体/部分の比較は試験的。高スコアでも正しい位置とは限りません。';
+ panel.appendChild(pre);
+}
+
+let recognitionRun=0;
+const rankProgress=document.getElementById('rankProgress');
+let rankIconUrls=[];
+function buildRankIconUrls(){
+ for(const url of rankIconUrls)URL.revokeObjectURL(url);
+ rankIconUrls=[];
+ if(!img)return;
+ const off=document.createElement('canvas');off.width=132;off.height=132;
+ const g=off.getContext('2d');
+ const scaleX=img.naturalWidth/BASE_W,scaleY=img.naturalHeight/BASE_H;
+ // HUD portrait slots in 710x1536 game screenshot; midpoint between active and idle Y.
+ const xs=[15,148,281,414],y=1120;
+ for(let i=0;i<4;i++){
+   g.clearRect(0,0,132,132);
+   g.drawImage(img,xs[i]*scaleX,y*scaleY,132*scaleX,132*scaleY,0,0,132,132);
+   rankIconUrls.push(off.toDataURL('image/jpeg',0.83));
+ }
+}
+function syncSelectedRankTile(){
+ const label=selectedCharacter>=0?characters[selectedCharacter]?.label:null;
+ for(const tile of rankProgress.querySelectorAll('.rank-tile')){
+  const active=!!label&&tile.dataset.rank===label;
+  tile.classList.toggle('selected',active);
+  tile.setAttribute('aria-pressed',String(active));
+ }
+}
+function selectRankCard(label){
+ const index=characters.findIndex(c=>c.label===label);
+ if(index<0){setStatus(label+' はまだ認識されていません');return;}
+ const c=characters[index];
+ selectingAutoMarker=false;autoMarkerSelect.textContent='自動丸を選択';
+ selectedCharacter=index;ball.x=c.x;ball.y=c.y;locked=true;manualAdjustMode=false;
+ dragging=null;aim.x=ball.x+200;aim.y=ball.y;pullPoint.x=ball.x-200;pullPoint.y=ball.y;
+ lockBtn.textContent='位置固定中';lockBtn.classList.add('locked');
+ syncSelectedRankTile();
+ setStatus(label+' を選択しました');draw();
+}
+function updateRankProgress(found=[],finished=false){
+ rankProgress.dataset.finished=String(finished);
+ const known=new Set(found);
+ rankProgress.replaceChildren(...RANK_LABELS.map((label,i)=>{
+   const state=known.has(label)?'found':finished?'failed':'searching',tile=document.createElement('button');
+   tile.type='button';tile.dataset.rank=label;tile.className='rank-tile '+state+(selectedCharacter>=0&&characters[selectedCharacter]?.label===label?' selected':'');
+   tile.disabled=state!=='found';tile.setAttribute('aria-label',label+' '+(state==='found'?'認識済み・タップして選択':state==='failed'?'検出失敗':'探索中'));
+   tile.onclick=()=>selectRankCard(label);
+   const photo=document.createElement('div');photo.className='rank-photo';
+   if(rankIconUrls[i])photo.style.backgroundImage='url("'+rankIconUrls[i]+'")';
+   const name=document.createElement('div');name.className='rank-name';name.textContent=label;
+   const symbol=document.createElement('div');symbol.className='rank-symbol';
+   if(state==='searching'){const spinner=document.createElement('div');spinner.className='rank-spin';symbol.appendChild(spinner);}
+   else{symbol.innerHTML=state==='found'
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="m7.5 12 3 3 6-7"/></svg>'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>';}
+   const caption=document.createElement('div');caption.className='rank-caption';caption.textContent=state==='found'?'認識済み':state==='failed'?'検出失敗':'探索中';
+   tile.append(photo,name,symbol,caption);return tile;
+ }));
+ syncSelectedRankTile();
+}
+updateRankProgress();
+const yieldPaint=()=>new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
+async function autoRecognize(runId){
+  const started=performance.now();let ocrMs=0,matchMs=0;
+  characters=[];selectedCharacter=-1;locked=false;manualAdjustMode=false;
+  lockBtn.textContent='手動位置固定';lockBtn.classList.remove('locked');
+  draw();setStatus('順位表示をAI文字認識中…');
+  try{
+    if(!window.rankOcrReady)throw new Error('OCRエンジンを読み込めません');
+    const ocr=await window.rankOcrReady;
+    const ocrStart=performance.now();const result=await window.runPaddleRankOCR(img,ocr);ocrMs=performance.now()-ocrStart;
+    if(runId!==recognitionRun)return;
+    const found=new Map();
+    for(const item of (result?.items||[])){
+      const label=rankFromText(item.text);
+      const score=Number(item.score)||0;
+      if(!label||score<0.35)continue;
+      const b=polygonBounds(item.poly);if(!b||b.w<8||b.h<8)continue;
+      // OCRは元画像の切り出し解像度で動作。画面基準(710x1536)へ変換。
+      const scaleX=img.naturalWidth/BASE_W,scaleY=img.naturalHeight/BASE_H;
+      const cx=(b.x+b.w/2)/scaleX;
+      const cy=(b.y+b.h/2+42*scaleY)/scaleY;
+      if(cx<0||cx>BASE_W||cy<180||cy>1180)continue;
+      const prev=found.get(label);
+      if(!prev||score>prev.score)found.set(label,{label,x:cx,y:cy,score,box:{x:b.x/scaleX,y:b.y/scaleY,w:b.w/scaleX,h:b.h/scaleY}});
+    }
+    // Fast local refinement is a complete stage: publish corrected OCR hits first.
+    const ocrLabels=new Set(found.keys());
+    const localStart=performance.now();
+    await yieldPaint();
+    if(runId!==recognitionRun)return;
+    const local=await detectRedRanks(img,[],[],[...found.values()].map(v=>({label:v.label,x:v.x,y:v.y-42})));
+    matchMs+=performance.now()-localStart;
+    if(runId!==recognitionRun)return;
+    for(const item of local.items){
+      const label=rankFromText(item.text),b=polygonBounds(item.poly);
+      if(!label||!b||!found.has(label))continue;
+      const scaleX=img.naturalWidth/BASE_W,scaleY=img.naturalHeight/BASE_H;
+      const cx=(b.x+b.w/2)/scaleX,cy=(b.y+b.h/2)/scaleY+42;
+      if(cx>=0&&cx<=BASE_W&&cy>=180&&cy<=1180)found.set(label,{...found.get(label),x:cx,y:cy,source:'OCR＋位置補正'});
+    }
+    characters=[...found.values()].sort((a,b)=>RANK_LABELS.indexOf(a.label)-RANK_LABELS.indexOf(b.label));
+    draw();
+    updateRankProgress(characters.map(c=>c.label));
+    setStatus('OCR＋位置補正 '+characters.length+'/4体完了。残りの順位を探索中…');
+    await yieldPaint();
+    if(runId!==recognitionRun)return;
+    // Broad search is reserved for OCR-missed ranks; do not redo local matches.
+    
+    setStatus('未検出の順位を画像照合中…');
+    const matchStart=performance.now();
+    const shape=await detectRedRanks(img,RANK_LABELS.filter(k=>!found.has(k)),[...found.values()].map(v=>({x:v.x,y:v.y-42})),[]);
+    matchMs+=performance.now()-matchStart;
+    if(runId!==recognitionRun)return;
+    for(const item of shape.items){
+      const label=rankFromText(item.text),b=polygonBounds(item.poly);
+      if(!label||!b)continue;
+      if(found.has(label)&&!item.refined)continue;
+      const scaleX=img.naturalWidth/BASE_W,scaleY=img.naturalHeight/BASE_H;
+      const cx=(b.x+b.w/2)/scaleX,cy=(b.y+b.h/2)/scaleY+42;
+      if(cx<0||cx>BASE_W||cy<180||cy>1180)continue;
+      found.set(label,{label,x:cx,y:cy,score:item.score,source:item.refined?'OCR＋位置補正':'画像照合',box:{x:b.x/scaleX,y:b.y/scaleY,w:b.w/scaleX,h:b.h/scaleY}});
+    }
+    window.rankV40Diagnostics={ocr:[...ocrLabels],shape:[...local.diagnostics,...shape.diagnostics],final:[...found.keys()],error:shape.error,ocrMs,matchMs,totalMs:performance.now()-started};
+    showRankDiagnostics(window.rankV40Diagnostics);
+    updateRankProgress([...found.keys()],true);
+    characters=[...found.values()].sort((a,b)=>RANK_LABELS.indexOf(a.label)-RANK_LABELS.indexOf(b.label));
+    // 同一ラベルの複数候補は最高スコアだけを採用。4種揃わない場合は無理に補完しない。
+  }catch(e){if(runId!==recognitionRun)return;updateRankProgress(characters.map(c=>c.label),true);console.error('PaddleOCR順位認識エラー',e);setStatus('AI文字認識を起動できません。通信環境を確認して手動配置してください');draw();return;}
+  draw();
+  const missing=RANK_LABELS.filter(k=>!characters.some(c=>c.label===k));
+  if(missing.length)setStatus('AI文字認識 '+characters.length+'/4体。未検出：'+missing.join('・')+'。誤検出に注意し必要なら手動配置');
+  else setStatus('1st〜4thを文字認識しました。使うキャラクターをタップしてください');
+}
+function setStatus(message){let s=document.getElementById('status');if(!s){s=document.createElement('div');s.id='status';s.className='status';document.querySelector('#dock').appendChild(s);}s.textContent=message;}
+resizeCanvas();
+// Keep the toolbar at the same place over the screenshot (69% of its height).
+// Extend the document below the screenshot when diagnostics grow.
+const dockElement=document.getElementById('dock');
+const wrapElement=document.getElementById('wrap');
+function syncOverlayPageHeight(){
+ const imageHeight=cv.getBoundingClientRect().height;
+ if(!imageHeight)return;
+ const dockTop=imageHeight*.69+6;
+ wrapElement.style.setProperty('--dock-top',dockTop+'px');
+ wrapElement.style.height=Math.ceil(Math.max(imageHeight,dockTop+dockElement.getBoundingClientRect().height))+'px';
+}
+new ResizeObserver(syncOverlayPageHeight).observe(dockElement);
+new ResizeObserver(syncOverlayPageHeight).observe(cv);
+window.addEventListener('resize',syncOverlayPageHeight);
+syncOverlayPageHeight();
+</script>
+
+<script type="module">
+  // Official PaddleOCR.js browser SDK. Model inference is performed locally in the browser.
+  window.rankOcrReady = (async () => {
+    const { PaddleOCR } = await import('https://esm.sh/@paddleocr/paddleocr-js');
+    return await PaddleOCR.create({
+      lang: 'en',
+      ocrVersion: 'PP-OCRv5',
+      textDetectionBatchSize: 1,
+      textRecognitionBatchSize: 4,
+      ortOptions: {
+        backend: 'wasm',
+        wasmPaths: 'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/',
+        numThreads: 1,
+        simd: true
+      }
+    });
+  })();
+  window.rankOcrReady.catch(err => {
+    console.error('PaddleOCR initialization failed:', err);
+    window.rankOcrReady = null;
+  });
+  window.runPaddleRankOCR = async (image, ocr) => {
+    const scaleX = image.naturalWidth / 710;
+    const scaleY = image.naturalHeight / 1536;
+    // Field plus a modest outside margin. Position within this area is not assumed.
+    const left = 0;
+    const top = Math.round(210 * scaleY);
+    const width = image.naturalWidth;
+    const height = Math.min(image.naturalHeight - top, Math.round(930 * scaleY));
+    const crop = document.createElement('canvas');
+    crop.width = width; crop.height = height;
+    const ctx = crop.getContext('2d', {willReadFrequently: true});
+    ctx.drawImage(image, left, top, width, height, 0, 0, width, height);
+    const [result] = await ocr.predict(crop);
+    // OCR polygon y is relative to the cropped field image; restore crop origin.
+    for (const item of (result.items || [])) {
+      if (Array.isArray(item.poly)) item.poly = item.poly.map(p => Array.isArray(p) ? [p[0], p[1] + top] : ({x:p.x,y:p.y+top}));
+    }
+    return result;
+  };
+</script>
+
+<script>
+window.opencvStatus='読み込み中';
+window.opencvReady=new Promise(resolve=>{
+ let settled=false;
+ const finish=(cv,error)=>{if(settled)return;settled=true;clearInterval(timer);clearTimeout(timeout);window.opencvStatus=cv?'準備完了':error;resolve(cv)};
+ const check=async()=>{
+  try{
+   let cv=window.cv;
+   if(cv&&typeof cv.then==='function')cv=await cv;
+   if(cv&&cv.Mat&&cv.matchTemplate&&cv.imread){finish(cv,null)}
+  }catch(e){window.opencvStatus='初期化エラー: '+String(e)}
+ };
+ const timer=setInterval(check,250);
+ const timeout=setTimeout(()=>finish(null,window.opencvStatus==='読み込み中'?'OpenCV読み込みタイムアウト':window.opencvStatus),45000);
+ window.opencvScriptFailed=()=>finish(null,'OpenCVスクリプトの取得失敗');
+ check();
+});
+</script><script async src="https://docs.opencv.org/4.x/opencv.js" onload="window.opencvStatus='スクリプト取得済み・初期化待ち'" onerror="window.opencvScriptFailed()"></script></body>
+</html>
