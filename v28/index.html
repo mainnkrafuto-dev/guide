@@ -649,7 +649,7 @@ resizeCanvas();
           claheMat = new cv.Mat();
           binary = new cv.Mat();
           cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-          clahe = new cv.CLAHE(2.0, new cv.Size(8,8));
+          clahe = cv.createCLAHE(2.0, new cv.Size(8,8));
           clahe.apply(gray, claheMat);
           cv.adaptiveThreshold(claheMat, binary, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 31, 9);
           for (const mat of [claheMat, binary]) {
@@ -663,7 +663,7 @@ resizeCanvas();
           console.warn('OpenCV前処理をスキップ:', e);
         } finally {
           if (clahe) clahe.delete();
-          [src, gray, claheMat, binary].forEach(m => { if (m && !m.isDeleted()) m.delete(); });
+          [src, gray, claheMat, binary].forEach(m => { if (m) m.delete(); });
         }
       }
     }
