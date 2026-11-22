@@ -136,6 +136,16 @@ html.ios-standalone { background:#090b10; }
 html.ios-standalone body { padding-top: 45px !important; }
 html.ios-standalone header { top: 0 !important; }
 .diag-rank-section{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .25s ease,opacity .25s ease;pointer-events:none}.diag-rank-section.open{grid-template-rows:1fr;opacity:1;pointer-events:auto}.diag-rank-inner{min-height:0;overflow:hidden}.diag-rank-section.open .diag-rank-inner{padding:9px 8px;margin-top:5px;background:#182331;border-radius:8px}.slider-line .stepper button{width:44px;height:39px}.slider-line{position:relative}.slider-line .slider-reading{position:absolute;right:103px;top:-17px;text-align:right;font-size:11px;white-space:nowrap;pointer-events:none}@media(max-width:520px){.slider-line .stepper button{width:43px;height:39px}}
+
+/* v69 refined: stepper occupies both label and slider rows without increasing panel height */
+.control.control-full:has(.slider-line){position:relative;padding-right:112px}
+.control.control-full:has(.slider-line) .top{min-height:15px;margin-bottom:3px}
+.control.control-full:has(.slider-line) .slider-line{position:static;min-height:28px}
+.control.control-full:has(.slider-line) .slider-line .stepper{position:absolute;right:8px;top:5px;bottom:5px;display:flex;gap:5px}
+.control.control-full:has(.slider-line) .slider-line .stepper button{width:44px;height:100%;font-size:23px}
+.control.control-full:has(.slider-line) .slider-reading{position:absolute;top:5px;right:112px;font-size:11px;text-align:right;pointer-events:none}
+.control.control-full:has(.slider-line) .slider-line input[type=range]{width:100%!important;flex:1}
+@media(max-width:520px){.control.control-full:has(.slider-line){padding-right:108px}.control.control-full:has(.slider-line) .slider-line .stepper{right:6px}.control.control-full:has(.slider-line) .slider-line .stepper button{width:43px}.control.control-full:has(.slider-line) .slider-reading{right:108px}}
 </style>
 </head>
 <body>
@@ -827,19 +837,19 @@ async function detectRedRanks(image,missing,ocrPositions=[],ocrBoxes=[]){
 function ensureDiagnosticExportUI(panel){
 if(panel.querySelector('#diag-export'))return;
 const shell=document.createElement('div');shell.id='diag-export';shell.style.marginTop='12px';
-const head=document.createElement('div');head.style.cssText='display:flex;align-items:stretch;gap:6px';
-const choices=document.createElement('div');choices.style.cssText='flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,36px);gap:4px 3px;align-items:center';
+const head=document.createElement('div');head.style.cssText='display:flex;align-items:stretch;gap:5px';
+const choices=document.createElement('div');choices.style.cssText='flex:1;min-width:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,33px);column-gap:0;row-gap:3px;align-items:center';
 const labels=[['success','成功'],['occlusion','遮蔽'],['falsePositive','誤検出'],['missing','認識漏れ'],['offset','位置ズレ']];
 const checks={},rankChecks={},sections={},order=[];
 const details=document.createElement('div');
-const saveBtn=document.createElement('button');saveBtn.type='button';saveBtn.disabled=true;saveBtn.style.cssText='flex:0 0 76px;min-width:0;min-height:76px;background:#145d95;border:1px solid #329fe1;border-radius:10px;font-size:10px;text-align:center;line-height:1.35;padding:5px 2px';
+const saveBtn=document.createElement('button');saveBtn.type='button';saveBtn.disabled=true;saveBtn.style.cssText='flex:0 0 102px;min-width:0;min-height:69px;background:#145d95;border:1px solid #329fe1;border-radius:10px;font-size:12px;text-align:center;line-height:1.35;padding:5px 3px';
 saveBtn.innerHTML='<span style="font-size:19px">⇩</span><span style="display:block">検証データ<br>保存</span>';
 function update(){const active=Object.keys(checks).filter(k=>checks[k].checked);saveBtn.disabled=!active.length;for(const key of Object.keys(sections)){const open=active.includes(key);sections[key].classList.toggle('open',open);sections[key].setAttribute('aria-hidden',String(!open));rankChecks[key].forEach(c=>c.disabled=!open);}details.replaceChildren(...order.map(k=>sections[k]));}
 for(const [key,label] of labels){
-const el=document.createElement('label');el.style.cssText='display:flex;align-items:center;gap:3px;min-width:0;padding:2px 0;font-size:11px;white-space:nowrap;cursor:pointer';
+const el=document.createElement('label');el.style.cssText='display:flex;align-items:center;justify-content:center;gap:3px;min-width:0;padding:2px 0;font-size:11px;white-space:nowrap;cursor:pointer';
 const cb=document.createElement('input');cb.type='checkbox';cb.value=key;cb.style.cssText='width:15px;height:15px;flex:none;accent-color:#48b7ff';checks[key]=cb;
 cb.addEventListener('change',()=>{if(key==='success'&&cb.checked)for(const k of Object.keys(sections))checks[k].checked=false;else if(key!=='success'&&cb.checked){checks.success.checked=false;if(!order.includes(key))order.push(key);}update();});
-el.append(cb,document.createTextNode(label));choices.appendChild(el);
+el.style.gridColumn=key==='missing'?'2 / span 2':key==='offset'?'4 / span 2':key==='success'?'1 / span 2':key==='occlusion'?'3 / span 2':'5 / span 2';el.style.gridRow=(key==='missing'||key==='offset')?'2':'1';el.append(cb,document.createTextNode(label));choices.appendChild(el);
 if(key==='success')continue;
 const section=document.createElement('div');section.className='diag-rank-section';section.setAttribute('aria-hidden','true');
 const content=document.createElement('div');content.className='diag-rank-inner';
