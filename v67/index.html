@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>モンスト反射線ガイド v67</title>
+<title>反射線ガイド v67</title>
 <style>*{box-sizing:border-box}
 :root{color-scheme:dark}
 body{margin:0;background:#090b10;color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}
@@ -140,7 +140,7 @@ html.ios-standalone header { top: 0 !important; }
 <body>
 <script>if(window.navigator.standalone===true)document.documentElement.classList.add("ios-standalone");</script>
 <header>
-  <div class="title"><h1>モンスト反射線ガイド</h1><span class="ver">v67 パネル位置と初期角度</span></div>
+  <div class="title"><h1>反射線ガイド</h1><span class="ver">v67 パネル位置と初期角度</span></div>
 </header>
 
 <div id="wrap">
@@ -409,7 +409,7 @@ function drawGuide(){
   ctx.beginPath();ctx.arc(ball.x,ball.y,4,0,Math.PI*2);ctx.fill();
   ctx.restore();
 
-  // モンスト式の感覚：最初にタップした「擬似キャラ中心」を固定し、
+  // ゲームの操作感：最初にタップした「擬似キャラ中心」を固定し、
   // そこから指を引っ張った方向の逆を進行方向にする。
   // 逆方向：常に黄色。反射回数0なら従来通り「最初の壁まで」。
   // 1以上なら壁で反射しながら黄色い軌道を伸ばす。
@@ -585,7 +585,7 @@ function move(e){
     const dx=aimAnchor.x-p.x;
     const dy=aimAnchor.y-p.y;
     if(Math.hypot(dx,dy)>1){
-      // モンスト本家に合わせて0.35度単位へスナップ
+      // ゲームに合わせて0.35度単位へスナップ
       const angle=Math.atan2(dy,dx), step=0.35*Math.PI/180;
       const snapped=Math.round(angle/step)*step;
       const len=Math.hypot(dx,dy);
