@@ -849,6 +849,24 @@ for(const rank of ['1st','2nd','3rd','4th']){const l=document.createElement('lab
 content.append(title,row);section.appendChild(content);sections[key]=section;
 }
 head.append(choices,saveBtn);shell.append(head,details);panel.appendChild(shell);
+saveBtn.addEventListener('click',async()=>{
+  if(!diagnosticSourceFile||!window.rankV40Diagnostics||diagnosticExportRun!==recognitionRun){alert('画像の認識診断が完了してから保存してください');return;}
+  const selected=Object.keys(checks).filter(k=>checks[k].checked);if(!selected.length)return;
+  saveBtn.disabled=true;
+  try{
+   const d=window.rankV40Diagnostics;
+   const affectedRanks=Object.fromEntries(selected.filter(k=>k!=='success').map(k=>[k,rankChecks[k].filter(c=>c.checked).map(c=>c.value)]));const payload={schemaVersion:2,appVersion:'v69',affectedRanks,exportedAt:new Date().toISOString(),labels:selected,source:{filename:diagnosticSourceFile.name,mime:diagnosticSourceFile.type,bytes:diagnosticSourceFile.size,width:img?.naturalWidth,height:img?.naturalHeight},baseCanvas:{width:BASE_W,height:BASE_H},ocrRaw:diagnosticRawOCR,diagnostics:d,finalCharacters:characters.map(c=>({label:c.label,x:c.x,y:c.y,score:c.score,source:c.source,box:c.box}))};
+   const json=JSON.stringify(payload,(k,v)=>typeof v==='number'&&!Number.isFinite(v)?null:v,2);
+   const summary='反射線ガイド v69 検証データ\\n判定: '+selected.map(k=>Object.fromEntries(labels)[k]).join('、')+'\\n認識: '+(d.final||[]).join('、')+'\\n画像: '+diagnosticSourceFile.name+'\\n';
+   const bytes=new Uint8Array(await diagnosticSourceFile.arrayBuffer());
+   const zip=buildDiagnosticZip([[diagnosticSourceFile.name||'screenshot.png',bytes],['diagnostic.json',new TextEncoder().encode(json)],['result.txt',new TextEncoder().encode(summary)]]);
+   const url=URL.createObjectURL(new Blob([zip],{type:'application/zip'}));
+   const a=document.createElement('a');a.href=url;a.download='monst-diagnostic-v69-'+new Date().toISOString().replace(/[:.]/g,'-')+'.zip';document.body.appendChild(a);a.click();a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(e){console.error('診断ZIP書き出しエラー',e);alert('保存に失敗しました: '+(e?.message||e));}
+  finally{saveBtn.disabled=false;}
+ });
+ 
 
 }
 function buildDiagnosticZip(entries){
