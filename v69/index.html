@@ -135,7 +135,7 @@ html,body{overflow-x:hidden;overflow-y:auto}
 html.ios-standalone { background:#090b10; }
 html.ios-standalone body { padding-top: 45px !important; }
 html.ios-standalone header { top: 0 !important; }
-.diag-rank-section{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .25s ease,opacity .25s ease;pointer-events:none}.diag-rank-section.open{grid-template-rows:1fr;opacity:1;pointer-events:auto}.diag-rank-inner{min-height:0;overflow:hidden}.diag-rank-section.open .diag-rank-inner{padding:9px 8px;margin-top:5px;background:#182331;border-radius:8px}.slider-line .stepper button{width:44px;height:39px}.slider-line .slider-reading{flex:0 0 36px;text-align:center;font-size:11px;white-space:nowrap}@media(max-width:520px){.slider-line .stepper button{width:43px;height:39px}}
+.diag-rank-section{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .25s ease,opacity .25s ease;pointer-events:none}.diag-rank-section.open{grid-template-rows:1fr;opacity:1;pointer-events:auto}.diag-rank-inner{min-height:0;overflow:hidden}.diag-rank-section.open .diag-rank-inner{padding:9px 8px;margin-top:5px;background:#182331;border-radius:8px}.slider-line .stepper button{width:44px;height:39px}.slider-line{position:relative}.slider-line .slider-reading{position:absolute;right:103px;top:-17px;text-align:right;font-size:11px;white-space:nowrap;pointer-events:none}@media(max-width:520px){.slider-line .stepper button{width:43px;height:39px}}
 </style>
 </head>
 <body>
@@ -969,8 +969,7 @@ updateRankProgress();
 const yieldPaint=()=>new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
 async function autoRecognize(runId){
   const started=performance.now();let ocrMs=0,matchMs=0;
-  characters=[];selectedCharacter=-1;locked=false;manualAdjustMode=false;
-  lockBtn.textContent='手動調整';lockBtn.classList.remove('locked');
+  // Preserve user selection while OCR and matching are still running.
   draw();setStatus('順位表示をAI文字認識中…');
   try{
     if(!window.rankOcrReady)throw new Error('OCRエンジンを読み込めません');
